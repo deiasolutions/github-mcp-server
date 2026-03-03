@@ -88,6 +88,11 @@ oauthRouter.post('/disconnect', async (req, res) => {
   if (!userId) {
     return res.status(400).json({ error: 'userId required' });
   }
-  await deleteToken(userId);
-  res.json({ status: 'disconnected' });
+  try {
+    await deleteToken(userId);
+    res.json({ status: 'disconnected' });
+  } catch (err) {
+    console.error('Disconnect error:', err.message);
+    res.status(503).json({ error: 'Database unavailable' });
+  }
 });

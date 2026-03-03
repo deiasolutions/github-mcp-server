@@ -17,7 +17,14 @@ sseRouter.get('/', async (req, res) => {
   }
 
   // Look up token
-  const tokenRecord = await getTokenByUserId(userId);
+  let tokenRecord;
+  try {
+    tokenRecord = await getTokenByUserId(userId);
+  } catch (err) {
+    console.error('Database error looking up token:', err.message);
+    return res.status(503).json({ error: 'Database unavailable' });
+  }
+
   if (!tokenRecord) {
     return res.status(401).json({ error: 'GitHub not connected. Run /github connect' });
   }
